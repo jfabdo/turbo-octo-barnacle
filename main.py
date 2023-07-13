@@ -1,4 +1,4 @@
-from Game import GUI
+from State import MenuState
 
-game = GUI()
+game = MenuState()
 game.run()
