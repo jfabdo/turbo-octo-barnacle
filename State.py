@@ -21,15 +21,13 @@ class MenuState(StateMachine):
     backtointro = escaped.to(intro)
 
     def __init__(self):
-        self.game = GUI()
+        self.GUI = GUI()
+        self.GUI.run()
     
     def on_enter_intro(self):
-        self.game.introscreen["text"] = choice(welcomescreen)
-        self.game.introscreen.setText()
-        self.game.introscreen.show()
+        self.GUI.introscreen["text"] = choice(welcomescreen)
+        self.GUI.introscreen.setText()
+        self.GUI.introscreen.show()
     
     def on_exit_intro(self):
-        self.game.introscreen.hide()
-    
-    def run(self):
-        self.game.run()
+        self.GUI.introscreen.hide()
