@@ -49,7 +49,6 @@ class Game(ShowBase):
         self.introscreen = DirectGui.DirectDialog(frameSize = (-0.7, 0.7, -0.7, 0.7),
                                    fadeScreen = 0.4,
                                    relief = DirectGui.DGG.FLAT)
-        self.introscreen.hide()
         label = DirectGui.DirectLabel(text = "Wizard Union",
                     parent = self.introscreen,
                     scale = 0.1,
