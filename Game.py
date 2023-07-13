@@ -24,7 +24,7 @@ class MenuState(StateMachine):
     backtointro = escaped.to(intro)
 
     def __init__(self):
-        self.game = Game()
+        pass
     
     def on_enter_intro(self):
         self.game.introscreen["text"] = choice(welcomescreen)
@@ -34,15 +34,13 @@ class MenuState(StateMachine):
     def on_exit_intro(self):
         self.game.introscreen.hide()
 
-    def run(self):
-        self.game.run()
-
-class Game(ShowBase):
+class GUI(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         
         self.setmonitor()
         self.intro_screen()
+        self.state = MenuState()
     
     def setmonitor(self):
         for m in get_monitors():
@@ -54,13 +52,14 @@ class Game(ShowBase):
         self.win.requestProperties(properties)
 
     def intro_screen(self):
-        self.introscreen = DirectGui.DirectDialog(frameSize = (-0.7, 0.7, -0.7, 0.7),
-                                   fadeScreen = 0.4,
-                                   relief = DirectGui.DGG.FLAT)
+        self.introscreenBackdrop = DirectGui.DirectFrame(frameColor = (0, 0, 0, 1),
+                                     frameSize = (-1, 1, -1, 1),
+                                     parent = render2d)
+        self.introscreen = DirectGui.DirectFrame(frameColor = (1, 1, 1, 0))
         label = DirectGui.DirectLabel(text = "Wizard Union",
                     parent = self.introscreen,
                     scale = 0.1,
-                    pos = (0, 0, 0.2))
+                    pos = (0, 0, 0.9))
         self.secondline = DirectGui.DirectLabel(text = "",
                                    parent = self.introscreen,
                                    scale = 0.07,
@@ -79,9 +78,10 @@ class Game(ShowBase):
         
     def startGame(self):
         pass
+
     def cleanup(self):
         pass
-    
+
     def quit(self):
         self.cleanup()
 
