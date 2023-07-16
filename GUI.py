@@ -1,42 +1,65 @@
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import WindowProperties
-from screeninfo import get_monitors
-import direct.gui.DirectGui as DirectGui
+
 from direct.actor.Actor import Actor
+from panda3d.core import CollisionTraverser, CollisionHandlerPusher, CollisionSphere, CollisionTube, CollisionNode
+from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import Vec4, Vec3
+from panda3d.core import WindowProperties
+
+from direct.gui.DirectGui import *
+
+from GameObject import *
+
+from State import MenuFSM
+
+import random
 
 class GUI(ShowBase):
-    def __init__(self):
+    def __init__(self,state):
+        self.state = state
         ShowBase.__init__(self)
-        self.setmonitor()
-        self.intro_screen()
-        self.disableMouse()
-        self.attachkeys()
-        self.loadscene()
+        self.setupPanda()
+        self.setscene()
+        self.setkeys()
+        self.setcollisions()
         self.updateTask = taskMgr.add(self.update, "update")
+        # self.spawning()
 
-    def loadscene(self):
-        #loader.loadModel("Models/Misc/environment")
-        # self.tempActor = Actor("Models/PandaChan/act_p3d_chan", {"walk" : "Models/PandaChan/a_p3d_chan_run"})
-        # self.tempActor.reparentTo(render)
-        #self.tempActor.loop("walk")
-        # Move the camera to a position high above the screen
-        # --that is, offset it along the z-axis.
+    def setupPanda(self):
+        self.disableMouse()
+
+        self.setmonitor()
+
+        self.exitFunc = self.cleanup
+        
+    def setscene(self):
+        mainLight = DirectionalLight("main light")
+        self.mainLightNodePath = render.attachNewNode(mainLight)
+        self.mainLightNodePath.setHpr(45, -45, 0)
+        render.setLight(self.mainLightNodePath)
+
+        # ambientLight = AmbientLight("ambient light")
+        # ambientLight.setColor(Vec4(0.2, 0.2, 0.2, 1))
+        # self.ambientLightNodePath = render.attachNewNode(ambientLight)
+        # render.setLight(self.ambientLightNodePath)
+
+        render.setShaderAuto()
+
+        # self.environment = loader.loadModel("Models/Misc/environment")
+        # self.environment.reparentTo(render)
+
         self.camera.setPos(0, 0, 32)
-        # Tilt the camera down by setting its pitch.
         self.camera.setP(-90)
-
-    def attachkeys(self):
+    
+    def setkeys(self):
         self.keyMap = {
             "up" : False,
             "down" : False,
             "left" : False,
             "right" : False,
-            "leftclick" : False,
-            "rightclick" : False,
-            "pause" : False,
-            "esc" : False
+            "shoot" : False
         }
+
         self.accept("w", self.updateKeyMap, ["up", True])
         self.accept("w-up", self.updateKeyMap, ["up", False])
         self.accept("s", self.updateKeyMap, ["down", True])
@@ -45,81 +68,155 @@ class GUI(ShowBase):
         self.accept("a-up", self.updateKeyMap, ["left", False])
         self.accept("d", self.updateKeyMap, ["right", True])
         self.accept("d-up", self.updateKeyMap, ["right", False])
-        self.accept("mouse1", self.updateKeyMap, ["leftclick", True])
-        self.accept("mouse1-up", self.updateKeyMap, ["leftclick", False])
-        self.accept("mouse2", self.updateKeyMap, ["rightclick", True])
-        self.accept("mouse2-up", self.updateKeyMap, ["rightclick", False])
-        self.accept("p", self.updateKeyMap, ["pause", True])
-        self.accept("p-up", self.updateKeyMap, ["pause", False])
-        self.accept("esc", self.updateKeyMap, ["esc", True])
-        self.accept("esc-up", self.updateKeyMap, ["esc", False])
+        self.accept("mouse1", self.updateKeyMap, ["shoot", True])
+        self.accept("mouse1-up", self.updateKeyMap, ["shoot", False])
         
-    def update(self, task):
-            # Get the amount of time since the last update
-        self.gameplay()
-        return task.cont
+    def setcollisions(self):
+        self.pusher = CollisionHandlerPusher()
+        self.cTrav = CollisionTraverser()
+
+        self.pusher.setHorizontal(True)
+
+        wallSolid = CollisionTube(-8.0, 0, 0, 8.0, 0, 0, 0.2)
+        wallNode = CollisionNode("wall")
+        wallNode.addSolid(wallSolid)
+        wall = render.attachNewNode(wallNode)
+        wall.setY(8.0)
+
+        wallSolid = CollisionTube(-8.0, 0, 0, 8.0, 0, 0, 0.2)
+        wallNode = CollisionNode("wall")
+        wallNode.addSolid(wallSolid)
+        wall = render.attachNewNode(wallNode)
+        wall.setY(-8.0)
+
+        wallSolid = CollisionTube(0, -8.0, 0, 0, 8.0, 0, 0.2)
+        wallNode = CollisionNode("wall")
+        wallNode.addSolid(wallSolid)
+        wall = render.attachNewNode(wallNode)
+        wall.setX(8.0)
+
+        wallSolid = CollisionTube(0, -8.0, 0, 0, 8.0, 0, 0.2)
+        wallNode = CollisionNode("wall")
+        wallNode.addSolid(wallSolid)
+        wall = render.attachNewNode(wallNode)
+        wall.setX(-8.0)
+
+    def setmenus(self):
+        #game over screen
+        self.gameOverScreen = DirectDialog(frameSize = (-0.7, 0.7, -0.7, 0.7),
+                                           fadeScreen = 0.4,
+                                           relief = DGG.FLAT,
+                                           frameTexture = "UI/stoneFrame.png")
+        self.gameOverScreen.hide()
+
+        # self.font = loader.loadFont("Fonts/Wbxkomik.ttf")
+
+        # buttonImages = (
+        #     loader.loadTexture("UI/UIButton.png"),
+        #     loader.loadTexture("UI/UIButtonPressed.png"),
+        #     loader.loadTexture("UI/UIButtonHighlighted.png"),
+        #     loader.loadTexture("UI/UIButtonDisabled.png")
+        # )
+        
+        label = DirectLabel(text = "Game Over!",
+                            parent = self.gameOverScreen,
+                            scale = 0.1,
+                            pos = (0, 0, 0.2),
+                            text_font = self.font,
+                            relief = None)
+
+        self.finalScoreLabel = DirectLabel(text = "",
+                                           parent = self.gameOverScreen,
+                                           scale = 0.07,
+                                           pos = (0, 0, 0),
+                                           text_font = self.font,
+                                           relief = None)
+
+        btn = DirectButton(text = "Restart",
+                           command = self.startGame,
+                           pos = (-0.3, 0, -0.2),
+                           parent = self.gameOverScreen,
+                           scale = 0.07,
+                           text_font = self.font,
+                        #    clickSound = loader.loadSfx("Sounds/UIClick.ogg"),
+                           frameTexture = buttonImages,
+                           frameSize = (-4, 4, -1, 1),
+                           text_scale = 0.75,
+                           relief = DGG.FLAT,
+                           text_pos = (0, -0.2))
+        btn.setTransparency(True)
+
+        btn = DirectButton(text = "Quit",
+                           command = self.quit,
+                           pos = (0.3, 0, -0.2),
+                           parent = self.gameOverScreen,
+                           scale = 0.07,
+                           text_font = self.font,
+                        #    clickSound = loader.loadSfx("Sounds/UIClick.ogg"),
+                           frameTexture = buttonImages,
+                           frameSize = (-4, 4, -1, 1),
+                           text_scale = 0.75,
+                           relief = DGG.FLAT,
+                           text_pos = (0, -0.2))
+        btn.setTransparency(True)
+        #title menu
+        self.titleMenuBackdrop = DirectFrame(frameColor = (0, 0, 0, 1),
+                                             frameSize = (-1, 1, -1, 1),
+                                             parent = render2d)
+
+        self.titleMenu = DirectFrame(frameColor = (1, 1, 1, 0))
+
+        title = DirectLabel(text = "Panda-chan",
+                            scale = 0.1,
+                            pos = (0, 0, 0.9),
+                            parent = self.titleMenu,
+                            relief = None,
+                            # text_font = self.font,
+                            text_fg = (1, 1, 1, 1))
+        title2 = DirectLabel(text = "and the",
+                             scale = 0.07,
+                             pos = (0, 0, 0.79),
+                             parent = self.titleMenu,
+                            #  text_font = self.font,
+                             frameColor = (0.5, 0.5, 0.5, 1))
+        title3 = DirectLabel(text = "Endless Horde",
+                             scale = 0.125,
+                             pos = (0, 0, 0.65),
+                             parent = self.titleMenu,
+                             relief = None,
+                            #  text_font = self.font,
+                             text_fg = (1, 1, 1, 1))
+
+        btn = DirectButton(text = "Start Game",
+                           command = self.startGame,
+                           pos = (0, 0, 0.2),
+                           parent = self.titleMenu,
+                           scale = 0.1,
+                        #    text_font = self.font,
+                        #    clickSound = loader.loadSfx("Sounds/UIClick.ogg"),
+                        #    frameTexture = buttonImages,
+                           frameSize = (-4, 4, -1, 1),
+                           text_scale = 0.75,
+                           relief = DGG.FLAT,
+                           text_pos = (0, -0.2))
+        btn.setTransparency(True)
+
+        btn = DirectButton(text = "Quit",
+                           command = self.quit,
+                           pos = (0, 0, -0.2),
+                           parent = self.titleMenu,
+                           scale = 0.1,
+                        #    text_font = self.font,
+                        #    clickSound = loader.loadSfx("Sounds/UIClick.ogg"),
+                        #    frameTexture = buttonImages,
+                           frameSize = (-4, 4, -1, 1),
+                           text_scale = 0.75,
+                           relief = DGG.FLAT,
+                           text_pos = (0, -0.2))
+        btn.setTransparency(True)
     
-    def gameplay(self):
-        dt = globalClock.getDt()
-
-        # If any movement keys are pressed, use the above time
-        # to calculate how far to move the character, and apply that.
-        if self.keyMap["up"]:
-            self.tempActor.setPos(self.tempActor.getPos() + Vec3(0, 5.0*dt, 0))
-        if self.keyMap["down"]:
-            self.tempActor.setPos(self.tempActor.getPos() + Vec3(0, -5.0*dt, 0))
-        if self.keyMap["left"]:
-            self.tempActor.setPos(self.tempActor.getPos() + Vec3(-5.0*dt, 0, 0))
-        if self.keyMap["right"]:
-            self.tempActor.setPos(self.tempActor.getPos() + Vec3(5.0*dt, 0, 0))
-        if self.keyMap["leftclick"]:
-            print ("Zap!")
-    
-    def updateKeyMap(self, controlName, controlState):
-        self.keyMap[controlName] = controlState
-        print (controlName, "set to", controlState)
-
-    def setmonitor(self):
-        for m in get_monitors():
-            if m.is_primary:
-                primarymonitor = m
-
-        properties = WindowProperties()
-        properties.setSize(primarymonitor.width, primarymonitor.height)
-        self.win.requestProperties(properties)
-
-    def intro_screen(self):
-        self.introscreenBackdrop = DirectGui.DirectFrame(frameColor = (0, 0, 0, 1),
-                                     frameSize = (-1, 1, -1, 1),
-                                     parent = render2d)
-        self.introscreen = DirectGui.DirectFrame(frameColor = (1, 1, 1, 0))
-        label = DirectGui.DirectLabel(text = "Wizard Union",
-                    parent = self.introscreen,
-                    scale = 0.1,
-                    pos = (0, 0, 0.9))
-        self.secondline = DirectGui.DirectLabel(text = "",
-                                   parent = self.introscreen,
-                                   scale = 0.07,
-                                   pos = (0, 0, 0))
-        btn = DirectGui.DirectButton(text = "Restart",
-                   command = self.startgame,
-                   pos = (-0.3, 0, -0.2),
-                   parent = self.introscreen,
-                   scale = 0.07)
-        
-        btn = DirectGui.DirectButton(text = "Quit",
-                   command = self.quit,
-                   pos = (0.3, 0, -0.2),
-                   parent = self.introscreen,
-                   scale = 0.07)
-        
     def cleanup(self):
         pass
-    
-    def startgame(self):
-        #set state to playing
-        pass
 
-    def quit(self):
-        self.cleanup()
-        base.userExit()
+    def update(self, task):
+        pass
