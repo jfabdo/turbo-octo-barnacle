@@ -1,3 +1,3 @@
-from State import MenuState
+from State import MenuFSM
 
-game = MenuState()
+game = MenuFSM()
