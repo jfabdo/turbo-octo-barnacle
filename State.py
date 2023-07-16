@@ -1,61 +1,90 @@
 from statemachine import StateMachine, State
 from random import choice
+import direct.fsm.FSM.FSM as FSM
 from GUI import GUI
 
 welcomescreen = [
     "Welcome, fool",
     "Welcome to the dungeons"
 ]
-
-class MenuState(StateMachine):
-    intro = State("Intro",initial=True) #introduction to game
-    exited = State("Exited",final=True) #exits the game
-    escaped = State("Escaped") #escape menu
-    playing = State("Playing") #playing game
-    paused = State("Paused") #game paused
-
-    startgame = intro.to(playing)
-    escapegame = playing.to(escaped)
-    pausegame = playing.to(paused)
-    quitgame = escaped.to(exited)
-    backtointro = escaped.to(intro)
-    resumegame = escaped.to(playing)
-
+class MenuFSM(FSM):
     def __init__(self):
-        self.GUI = GUI()
+        FSM.__init__(self, 'MenuState')
+        self.defaultTransitions = {
+            'Intro' : [ 'Exited', 'Playing' ],
+            'Playing' : [ 'Escaped', 'Paused' ],
+            'Escaped' : [ 'Exited', 'Intro', 'Playing' ],
+            'Paused' : [ 'Escaped', 'Playing' ],
+            'Exited' : [ ],
+        }
+        self.GUI = GUI(self)
         self.GUI.run()
-    
-    def on_enter_intro(self):
-        self.GUI.introscreen["text"] = choice(welcomescreen)
-        self.GUI.introscreen.setText()
+
+    def enterIntro(self):
         self.GUI.introscreen.show()
-        pass
+
+    def exitIntro(self):
+        self.GUI.introscreen.hide()
+
+class ActorFSM(FSM):
+    def __init__(self):
+        FSM.__init__(self, 'ActorState')
+        # self.defaultTransitions = {
+        #     'Standing' :
+        # }
     
-    def on_exit_intro(self):
-        # self.GUI.introscreen.hide()
+    def enterStanding(self):
         pass
 
-    def on_enter_escaped(self):
-        pass #put up escape menu
-    
-    def on_exit_escaped(self):
-        pass #pull down escape menu
+    def enterWalking(self):
+        pass
 
-    def on_enter_exited(self):
-        pass #Start cleanup
-    
-    def on_exit_exited(self):
-        pass #finish cleanup
-    
-    def on_enter_playing(self):
-        #print(self.current_state.id) #enable key presses, motion, time, etc.
+    def enterWeapon(self): #be sure to allow for both hand fighting
         pass
     
-    def on_exit_playing(self):
-        pass #disable key presses, motion, time, etc.
-    
-    def on_enter_paused(self):
-        pass #gray out the screen
+    def enterMagic(self):
+        pass
 
-    def on_exit_paused(self):
-        pass #take down the gray
+    def enterHit(self):
+        pass
+
+    def enterDead(self):
+        pass
+
+class WeaponFSM(FSM):
+    def __init__(self):
+        FSM.__init__(self, 'WeaponState')
+    
+    def enterIdle(self):
+        pass
+
+    def enterSwing(self):
+        pass
+
+    def enter
+
+class MagicFSM(FSM):
+    def __init__(self):
+        FSM.__init__(self, 'MagicState')
+        self.defaultTransitions = {
+                'Idle' : [ 'Charging', 'Exit' ],
+                'Charging' : [ 'Firing' ],
+                'Firing' : [ 'Hit' ],
+                'Hit' : [ 'Idle' ],
+                'Exit' : [ '' ]
+        }
+
+    def enterIdle(self):
+        pass
+
+    def enterCharging(self):
+        pass
+
+    def enterFiring(self):
+        pass
+
+    def enterHit(self):
+        pass
+
+    def enterExit(self):
+        pass
