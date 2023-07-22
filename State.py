@@ -1,12 +1,13 @@
-from statemachine import StateMachine, State
 from random import choice
-import direct.fsm.FSM.FSM as FSM
+import direct.fsm.FSM as FSM
 from GUI import GUI
+from direct.gui.DirectGui import taskMgr
 
 welcomescreen = [
     "Welcome, fool",
     "Welcome to the dungeons"
 ]
+
 class MenuFSM(FSM):
     def __init__(self):
         FSM.__init__(self, 'MenuState')
@@ -25,6 +26,9 @@ class MenuFSM(FSM):
 
     def exitIntro(self):
         self.GUI.introscreen.hide()
+
+    def enterPlaying(self):
+        self.GUI.updateTask = taskMgr.add(self.update, "update")
 
 class ActorFSM(FSM):
     def __init__(self):
@@ -54,14 +58,22 @@ class ActorFSM(FSM):
 class WeaponFSM(FSM):
     def __init__(self):
         FSM.__init__(self, 'WeaponState')
+        self.defaultTransitions = {
+                'Draw' : [ 'Idle' ],
+                'Idle' : [ 'Strike', 'Block', 'Away' ],
+                'Strike' : [ 'Idle', ],
+                'Block' : [ 'Idle', 'Strike' ],
+                'Away' : [ '' ]
+        }
     
     def enterIdle(self):
         pass
 
-    def enterSwing(self):
-        pass
+    def enterStrike(self):
+        self.request('Idle')
 
-    def enter
+    def enterBlock(self):
+        pass
 
 class MagicFSM(FSM):
     def __init__(self):
@@ -78,13 +90,14 @@ class MagicFSM(FSM):
         pass
 
     def enterCharging(self):
-        pass
+        #hold off until 
+        self.request('Firing')
 
     def enterFiring(self):
-        pass
+        self.request('Hit')
 
     def enterHit(self):
-        pass
+        self.request('Idle')
 
     def enterExit(self):
-        pass
+        pass #destroy object

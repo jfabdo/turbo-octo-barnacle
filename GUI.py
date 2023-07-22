@@ -22,7 +22,7 @@ class GUI(ShowBase):
         self.setscene()
         self.setkeys()
         self.setcollisions()
-        self.updateTask = taskMgr.add(self.update, "update")
+        
         # self.spawning()
 
     def setupPanda(self):
