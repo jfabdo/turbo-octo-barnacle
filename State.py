@@ -222,4 +222,4 @@ class MagicFSM(FSM):
         self.request('Idle')
 
     def enterAway(self):
-        self..cleanup(self) #destroy object
+        pass #destroy object
