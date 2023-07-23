@@ -1,7 +1,7 @@
 from random import choice
 import direct.fsm.FSM as FSM
 from GUI import GUI
-from GameObject import Actor, W
+from GameObject import Actor
 from direct.gui.DirectGui import taskMgr
 
 
