@@ -7,5 +7,5 @@ def onload(file):
 def onerror(file):
     print(f"Download failed for {file}.")
 
-url = "./big-texture.png"
-handle = emscripten.async_wget(url, "target.png", onload, onerror)
+# url = "./big-texture.png"
+# handle = emscripten.async_wget(url, "target.png", onload, onerror)
