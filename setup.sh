@@ -9,4 +9,3 @@ python3.8 -OO freezify.py
 echo "#include 'emscriptenmodule.c'"
 #include "browsermodule.c"
 npm install -g http-server
-http-server
