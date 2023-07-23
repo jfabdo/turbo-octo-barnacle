@@ -4,7 +4,6 @@ from GUI import GUI
 from GameObject import Actor
 from direct.gui.DirectGui import taskMgr
 
-
 welcomescreen = [
     "Welcome, fool",
     "Welcome to the dungeons"
