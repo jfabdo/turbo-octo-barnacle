@@ -1,3 +1,2 @@
 screeninfo
 panda3d
-python-statemachine
