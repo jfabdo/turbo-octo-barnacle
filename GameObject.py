@@ -89,7 +89,7 @@ class Player(GameObject):
 
         heading = self.yVector.signedAngleDeg(firingVector2D)
         self.actor.setH(heading)
-        if keys["shoot"]:
+        if self.keys["shoot"]:
             self.state.request("Weapon") #fire the beam
 
 class TheCloud(GameObject):
