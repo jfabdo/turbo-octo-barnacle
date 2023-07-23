@@ -23,6 +23,15 @@ class GUI(ShowBase):
         self.setkeys()
         self.setcollisions()
         
+        self.score = 0
+
+        self.scoreUI = OnscreenText(text = "0",
+                                    pos = (-1.3, 0.825),
+                                    mayChange = True,
+                                    align = TextNode.ALeft,
+                                    font = base.font)
+
+        self.healthIcons = []
         # self.spawning()
 
     def setupPanda(self):
@@ -57,7 +66,9 @@ class GUI(ShowBase):
             "down" : False,
             "left" : False,
             "right" : False,
-            "shoot" : False
+            "weapon" : False,
+            "magic"  : False,
+            "jump"  : False,
         }
 
         self.accept("w", self.updateKeyMap, ["up", True])
@@ -68,8 +79,12 @@ class GUI(ShowBase):
         self.accept("a-up", self.updateKeyMap, ["left", False])
         self.accept("d", self.updateKeyMap, ["right", True])
         self.accept("d-up", self.updateKeyMap, ["right", False])
-        self.accept("mouse1", self.updateKeyMap, ["shoot", True])
-        self.accept("mouse1-up", self.updateKeyMap, ["shoot", False])
+        self.accept("mouse1", self.updateKeyMap, ["weapon", True])
+        self.accept("mouse1-up", self.updateKeyMap, ["weapon", False])
+        self.accept("mouse2", self.updateKeyMap, ["magic", True])
+        self.accept("mouse2-up", self.updateKeyMap, ["magic", False])
+        self.accept("space", self.updateKeyMap, ["jump", True])
+        self.accept("space-up", self.updateKeyMap, ["jump", False])
         
     def setcollisions(self):
         self.pusher = CollisionHandlerPusher()
@@ -216,7 +231,53 @@ class GUI(ShowBase):
         btn.setTransparency(True)
     
     def cleanup(self):
-        pass
+        self.scoreUI.removeNode()
+
+        for icon in self.healthIcons:
+            icon.removeNode()
+
+        self.beamHitModel.removeNode()
+
+        base.cTrav.removeCollider(self.rayNodePath)
+
+        self.laserSoundHit.stop()
+        self.laserSoundNoHit.stop()
+
+        render.clearLight(self.beamHitLightNodePath)
+        self.beamHitLightNodePath.removeNode()
+
+        GameObject.cleanup(self)
 
     def update(self, task):
-        pass
+        mouseWatcher = base.mouseWatcherNode
+        if mouseWatcher.hasMouse():
+            mousePos = mouseWatcher.getMouse()
+        else:
+            mousePos = self.lastMousePos
+    
+        self.mousePos3D = Point3()
+        nearPoint = Point3()
+        farPoint = Point3()
+
+        base.camLens.extrude(mousePos, nearPoint, farPoint)
+        self.groundPlane.intersectsLine(self.mousePos3D,
+                                        render.getRelativePoint(base.camera, nearPoint),
+                                        render.getRelativePoint(base.camera, farPoint))
+
+        self.beamHitTimer -= dt
+        if self.beamHitTimer <= 0:
+            self.beamHitTimer = self.beamHitPulseRate
+            self.beamHitModel.setH(random.uniform(0.0, 360.0))
+        self.beamHitModel.setScale(math.sin(self.beamHitTimer*3.142/self.beamHitPulseRate)*0.4 + 0.9)
+
+        if firingVector.length() > 0.001:
+            self.ray.setOrigin(self.actor.getPos())
+            self.ray.setDirection(firingVector)
+
+        self.lastMousePos = mousePos
+
+        if self.damageTakenModelTimer > 0:
+            self.damageTakenModelTimer -= dt
+            self.damageTakenModel.setScale(2.0 - self.damageTakenModelTimer/self.damageTakenModelDuration)
+            if self.damageTakenModelTimer <= 0:
+                self.damageTakenModel.hide()
