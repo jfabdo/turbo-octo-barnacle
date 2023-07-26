@@ -7,8 +7,8 @@ import pygame_gui
 pygame.init()
 
 gamesize = pygame.display.get_desktop_sizes()[0]
-gamesize = (list(gamesize)[0],list(gamesize)[1]-50)
-pygame.display.set_caption('Game Menu')
+gamesize = (list(gamesize)[0],list(gamesize)[1]-50) #reduce height
+pygame.display.set_caption('Grungy Kitty')
 window_surface = pygame.display.set_mode(gamesize)
 
 background = pygame.Surface(gamesize)
