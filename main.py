@@ -39,9 +39,9 @@ async def main():
             if event.type == pygame.QUIT:
                 is_running = False
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                events.append('button.' + event.ui_element)
+                events.append('button:' + event.ui_object_id)
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
-                events.append("dropdown." + event.text + "." + event.ui_object_id)
+                events.append("dropdown:" + event.text + ":" + event.ui_object_id)
             if event.type == pygame_gui.UI_WINDOW_MOVED_TO_FRONT:
                 pass
                 # if event.ui_element not in running.keys():

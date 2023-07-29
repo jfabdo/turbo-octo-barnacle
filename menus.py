@@ -15,7 +15,7 @@ class Menus():
         return pygame_gui.elements.UIDropDownMenu(
                                             options_list= [startstr] + optionlist, 
                                             starting_option=startstr,
-                                            object_id=startstr+".open",
+                                            object_id=startstr+":open",
                                             manager=manager,
                                             relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])),
                                             expand_on_option_click=True)
@@ -28,15 +28,15 @@ class Menus():
         applist = ['curious george','defense towers']
         if open('config.dev') != None:
             object_id = "dev"
-            self.getddm(manager,[5,5,100,20],applist,object_id)
+            self.getddm(manager,[5,5,200,20],applist,object_id)
         object_id = "play"
-        button = self.getddm(manager,[5,35,100,20],applist,object_id)
+        button = self.getddm(manager,[5,35,200,20],applist,object_id)
         self.regelm(object_id,self.getapps)
-        object_id = "obsv"
-        button = self.getddm(manager,[5,65,100,20],applist,object_id)
+        object_id = "observe"
+        button = self.getddm(manager,[5,65,200,20],applist,object_id)
         self.regelm(object_id,self.getobvs)
         object_id = "chat"
-        button = self.getddm(manager,[size[0]-105,size[1]-25,100,20],applist,object_id)
+        button = self.getddm(manager,[size[0]-205,size[1]-25,200,20],applist,object_id)
         self.regelm(object_id,self.getchat)
 
     def regelm(self, id, function):
