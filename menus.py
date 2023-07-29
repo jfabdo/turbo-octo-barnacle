@@ -13,11 +13,12 @@ class Menus():
 
     def getddm(self,manager,position,optionlist,startstr):
         return pygame_gui.elements.UIDropDownMenu(
-                                            optionlist, 
-                                            startstr,
+                                            options_list= [startstr] + optionlist, 
+                                            starting_option=startstr,
+                                            object_id=startstr+".open",
                                             manager=manager,
-                                            relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])))
-
+                                            relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])),
+                                            expand_on_option_click=True)
 
     def getwindow(self,manager,offset,position):
         return pygame_gui.elements.UIButton(relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])),
