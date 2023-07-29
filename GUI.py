@@ -114,7 +114,8 @@ class GUI(ShowBase):
 
     def update(self,dt,events):#get size, update size if it changes, but update that here
         for event in events:
-            self.updateTask = taskMgr.add(self.menus.register[event](),"event")
+            if event in self.menus.register:
+                self.updateTask = taskMgr.add(self.menus.register[event](),"event")
         
         for value in self.players.values():
             self.updateTask = taskMgr.add(value.update(dt), "update")
