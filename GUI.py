@@ -35,8 +35,8 @@ class GUI(ShowBase):
 
         # self.healthIcons = []
         # # self.spawning()
-        # self.players = {}
-        # self.enemies = {}
+        self.players = {}
+        self.enemies = {}
 
     def setupPanda(self):
         # self.disableMouse()
@@ -112,9 +112,16 @@ class GUI(ShowBase):
 
         GameObject.cleanup(self)
 
-    def update(self,dt):#get size, update size if it changes, but update that here
-        pass
+    def update(self,dt,events):#get size, update size if it changes, but update that here
+        for event in events:
+            self.updateTask = taskMgr.add(self.menus.register[event](),"event")
         
+        for value in self.players.values():
+            self.updateTask = taskMgr.add(value.update(dt), "update")
+
+        for value in self.enemies.values():
+            self.updateTask = taskMgr.add(value.update(dt), "update")
+
         # for player in self.players.values():
         #     self.updateTask = taskMgr.add(player.update(dt), "update")
         
