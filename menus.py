@@ -1,3 +1,4 @@
+from pygame_gui.core import ObjectID
 import pygame, pygame_gui
 
 class Menus():
@@ -7,7 +8,8 @@ class Menus():
     def getbutton(self,manager,position,text,object_id):
         return pygame_gui.elements.UIButton(relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])),
                                             text=text,
-                                            manager=manager,object_id=object_id)
+                                            manager=manager,
+                                            object_id=ObjectID(object_id=object_id))
 
     def getwindow(self,manager,offset,position):
         return pygame_gui.elements.UIButton(relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])),
