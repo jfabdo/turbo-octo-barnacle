@@ -12,10 +12,9 @@ game = None
 
 def setup():
     global running, manager, window_surface, background, game
-    running = {}
     pygame.init()
 
-    gamesize = pygame.display.get_desktop_sizes()[0]
+    gamesize = (1400,900) #implement dropdown resolution
     gamesize = (list(gamesize)[0],list(gamesize)[1]-50) #reduce height
     pygame.display.set_caption('Grungy Kitty')
     window_surface = pygame.display.set_mode(gamesize)
@@ -28,7 +27,6 @@ def setup():
 
 async def main():
     setup()
-
     clock = pygame.time.Clock()
     is_running = True
 
