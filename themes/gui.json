@@ -1,0 +1,10 @@
+{
+    "drop_down_menu":
+    {
+        "misc":
+        {
+            "expand_direction": "down",
+            "open_button_width":"0"
+        }
+    }
+}

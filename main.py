@@ -1,8 +1,9 @@
 import asyncio
-from GUI import GUI
+# from GUI import GUI
 import pygame
 import pygame_gui
 # from screeninfo import get_monitors
+from menus import Menus
 
 running = {}
 manager = None
@@ -16,14 +17,16 @@ def setup():
 
     gamesize = (1400,900) #implement dropdown resolution
     gamesize = (list(gamesize)[0],list(gamesize)[1]-50) #reduce height
-    pygame.display.set_caption('Grungy Kitty')
+    pygame.display.set_caption('Grungy Kitty Play Center')
     window_surface = pygame.display.set_mode(gamesize)
 
     background = pygame.Surface(gamesize)
     background.fill(pygame.Color('#000000'))
 
     manager = pygame_gui.UIManager(gamesize)
-    game = GUI(manager=manager,size=gamesize)
+    # game = GUI(manager=manager,size=gamesize)
+    game = Menus()
+    game.setdesktop(manager,gamesize)
 
 async def main():
     setup()
@@ -51,7 +54,7 @@ async def main():
                 
             manager.process_events(event)
 
-        game.update(time_delta,events)
+        # game.update(time_delta,events) # only play games that are
 
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
