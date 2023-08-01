@@ -161,8 +161,7 @@ cython_debug/
 config.py
 *.config
 .vscode/
-*.c
-*.zip
 
 .DS_Store
 *.dev
+applist
