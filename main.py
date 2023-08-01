@@ -5,13 +5,24 @@ import pygame_gui
 # from screeninfo import get_monitors
 from menus import Menus
 
+gamesize = (0,0)
 running = {}
 manager = None
 window_surface = None
 background = None
 game = None
+installed = {}
+children = {}
+
+def getgames():
+    global installed
+    with open('applist') as f:
+        for i in f.readlines():
+            ii = i.strip().split(':')
+            installed[ii[0]] = ii[1]
 
 def setup():
+    #check for applications- show them in menu. Obsv takes you to a camover of a running game. Don't implement unions here, but implement limited vision here. Dev shows you different things. Build in tools to dev
     global running, manager, window_surface, background, game
     pygame.init()
 
@@ -26,9 +37,12 @@ def setup():
     manager = pygame_gui.UIManager(gamesize)
     # game = GUI(manager=manager,size=gamesize)
     game = Menus()
-    game.setdesktop(manager,gamesize)
+    game.setdesktop(manager,gamesize,installed)
+
 
 async def main():
+    global gamesize
+    getgames()
     setup()
     clock = pygame.time.Clock()
     is_running = True
@@ -42,6 +56,9 @@ async def main():
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 events.append('button:' + event.ui_object_id)
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+                if event.ui_object_id in ['dev','play','observe','chat']:
+                    game.openprogram(manager,[210,5,list(gamesize)[0],list(gamesize)[1]],installed[event.text])
+                    
                 events.append("dropdown:" + event.text + ":" + event.ui_object_id)
             if event.type == pygame_gui.UI_WINDOW_MOVED_TO_FRONT:
                 pass
