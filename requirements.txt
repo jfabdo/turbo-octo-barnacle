@@ -1,5 +1,2 @@
-screeninfo
-panda
-panda3d
 pygame-ce
 pygame_gui

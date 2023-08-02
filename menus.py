@@ -23,12 +23,8 @@ class Menus():
                                             expand_on_option_click=True)
 
     def openprogram(self,manager,position,relpath):
-        window =  pygame_gui.elements.UIButton(relative_rect=pygame.Rect((position[0], position[1]), (position[2], position[3])),
-                                            manager=manager)
-        
-        sys.path.insert(0, abspath(relpath))
-        import main
-        sys.path.pop(0)
+        window =  GameWindow(position,manager,relpath)
+        return window
 
     def setdesktop(self,manager,size,applist):
         buttons = []
@@ -45,9 +41,6 @@ class Menus():
         buttons += [self.getddm(manager,[size[0]-205,size[1]-25,200,20],applist,object_id)]
         self.regelm(object_id,self.getchat)
         return buttons
-    
-    def setwindow(self,manager):
-        pass
 
     def regelm(self, id, function):
         self.register[id] = function
@@ -59,4 +52,22 @@ class Menus():
         pass
 
     def getchat(self):
+        pass
+
+class GameWindow(pygame_gui.elements.ui_window.UIWindow):
+    def __init__(self,position,manager,relpath) -> None:
+        # super.__init__(self,rect=pygame.rect((position[0], position[1]), (position[2], position[3])),
+            # manager=manager)
+        self.setup(manager,position,relpath)
+
+    def on_moved_to_front(self):
+        pass
+
+    def setup(self,manager,position,relpath):
+        sys.path.insert(0, abspath(relpath))
+        from Game import Game
+        sys.path.pop(0)
+        self.game = Game(manager,position)
+        
+    def update(self):
         pass

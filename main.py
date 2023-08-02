@@ -6,7 +6,7 @@ import pygame_gui
 from menus import Menus
 
 gamesize = (0,0)
-running = {}
+running = []
 manager = None
 window_surface = None
 background = None
@@ -23,7 +23,7 @@ def getgames():
 
 def setup():
     #check for applications- show them in menu. Obsv takes you to a camover of a running game. Don't implement unions here, but implement limited vision here. Dev shows you different things. Build in tools to dev
-    global running, manager, window_surface, background, game
+    global running, manager, window_surface, background, game, gamesize
     pygame.init()
 
     gamesize = (1400,900) #implement dropdown resolution
@@ -39,9 +39,8 @@ def setup():
     game = Menus()
     game.setdesktop(manager,gamesize,installed)
 
-
 async def main():
-    global gamesize
+    global gamesize, running
     getgames()
     setup()
     clock = pygame.time.Clock()
@@ -56,10 +55,11 @@ async def main():
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 events.append('button:' + event.ui_object_id)
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
-                if event.ui_object_id in ['dev','play','observe','chat']:
-                    game.openprogram(manager,[210,5,list(gamesize)[0],list(gamesize)[1]],installed[event.text])
-                    
-                events.append("dropdown:" + event.text + ":" + event.ui_object_id)
+                if event.ui_object_id in ['dev','play','observe','chat'] and event.text not in ['dev','play','observe','chat']:
+                    print(installed[event.text])
+                    running += [game.openprogram(manager,[210,5,list(gamesize)[0] - 210,list(gamesize)[1] - 10],installed[event.text])]
+                else:
+                    events.append("dropdown:" + event.text + ":" + event.ui_object_id)
             if event.type == pygame_gui.UI_WINDOW_MOVED_TO_FRONT:
                 pass
                 # if event.ui_element not in running.keys():
@@ -72,6 +72,8 @@ async def main():
             manager.process_events(event)
 
         # game.update(time_delta,events) # only play games that are
+        for i in running:
+            i.game.update(time_delta,events)
 
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
