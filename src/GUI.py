@@ -11,9 +11,17 @@ class GUI(ShowBase):
         self.intro_screen()
     
     def setmonitor(self):
+        primarymonitor = None
+        backupmonitor = None
+
         for m in get_monitors():
             if m.is_primary:
                 primarymonitor = m
+            if m.x == 0:
+                backupmonitor = m
+
+        if not primarymonitor and backupmonitor:
+            primarymonitor = backupmonitor
 
         properties = WindowProperties()
         properties.setSize(primarymonitor.width, primarymonitor.height)
