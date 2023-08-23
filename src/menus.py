@@ -1,6 +1,6 @@
 from pygame_gui.core import ObjectID
 import pygame, pygame_gui
-from os.path import abspath
+from os.path import abspath, isfile
 import sys
 
 class Menus():
@@ -28,9 +28,11 @@ class Menus():
 
     def setdesktop(self,manager,size,applist):
         buttons = []
-        if open('config.dev') != None:
+
+        if isfile('config.dev'):
             object_id = "dev"
             self.getddm(manager,[5,5,200,20],applist,object_id)
+
         object_id = "play"
         buttons += [self.getddm(manager,[5,35,200,20],applist,object_id)]
         self.regelm(object_id,self.getapps)
