@@ -66,8 +66,9 @@ class GameWindow(pygame_gui.elements.ui_window.UIWindow):
     def setup(self,manager,position,relpath):
         sys.path.insert(0, abspath(relpath))
         from Game import Game
-        sys.path.pop(0)
-        self.game = Game(manager,position)
+        # 
+        self.game = Game(manager,position,sys.path[0])
+        self.game.run()
         
     def update(self):
         pass

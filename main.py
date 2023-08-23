@@ -37,7 +37,7 @@ def setup():
     manager = pygame_gui.UIManager(gamesize)
     # game = GUI(manager=manager,size=gamesize)
     game = Menus()
-    game.setdesktop(manager,gamesize,installed)
+    game.setdesktop(manager,list(gamesize),installed)
 
 async def main():
     global gamesize, running
@@ -53,11 +53,11 @@ async def main():
             if event.type == pygame.QUIT:
                 is_running = False
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                print(event.ui_object_id)
                 events.append('button:' + event.ui_object_id)
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                 if event.ui_object_id in ['dev','play','observe','chat'] and event.text not in ['dev','play','observe','chat']:
-                    print(installed[event.text])
-                    running += [game.openprogram(manager,[210,5,list(gamesize)[0] - 210,list(gamesize)[1] - 10],installed[event.text])]
+                    running += [game.openprogram(manager,[210,5,list(gamesize)[0] - 210,list(gamesize)[1] - 50],installed[event.text])]
                 else:
                     events.append("dropdown:" + event.text + ":" + event.ui_object_id)
             if event.type == pygame_gui.UI_WINDOW_MOVED_TO_FRONT:
