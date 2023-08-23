@@ -16,10 +16,15 @@ children = {}
 
 def getgames():
     global installed
-    with open('applist') as f:
-        for i in f.readlines():
-            ii = i.strip().split(':')
-            installed[ii[0]] = ii[1]
+
+    try:
+        with open('applist') as f:
+            for i in f.readlines():
+                ii = i.strip().split(':')
+                installed[ii[0]] = ii[1]
+    except:
+        # No current file to load installed from
+        pass
 
 def setup():
     #check for applications- show them in menu. Obsv takes you to a camover of a running game. Don't implement unions here, but implement limited vision here. Dev shows you different things. Build in tools to dev
