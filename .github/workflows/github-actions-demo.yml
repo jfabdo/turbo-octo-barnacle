@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log job attrs
-      - run: |
+        run: |
           echo "Actor: ${{ github.actor }}"
           echo "Trigger: ${{ github.event_name }}"
           echo "OS: ${{ runner.os }}"
