@@ -64,7 +64,9 @@ class GameWindow(pygame_gui.elements.ui_window.UIWindow):
 
     def on_moved_to_front(self):
         pass
-
+    
+    # pulls in the game from the path given in applist.
+    # TODO: Load from web addresses
     def setup(self,manager,position,relpath):
         sys.path.insert(0, abspath(relpath))
         from Game import Game
