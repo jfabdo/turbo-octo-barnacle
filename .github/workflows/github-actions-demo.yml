@@ -19,4 +19,5 @@ jobs:
           ls ${{ github.workspace }}
       - name: Install deps
         run: bin/init
-      - run: echo "Status: ${{ job.status }}"
+      - run: |
+          echo "Status: ${{ job.status }}"
