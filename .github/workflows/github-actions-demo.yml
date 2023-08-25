@@ -20,4 +20,4 @@ jobs:
       - name: Install deps
         run: bin/init
       - name: Log job status
-        run: "Status: ${{ job.status }}"
+        run: echo "Status: ${{ job.status }}"
