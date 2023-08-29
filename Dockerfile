@@ -1,12 +1,12 @@
 FROM nikolaik/python-nodejs:latest
 WORKDIR /app
-COPY . .
+COPY src/build/web/* ./
 
-COPY requirements.txt .
+RUN mkdir archives
+RUN git clone --depth 1 https://github.com/pygame-web/archives archives
+RUN chmod -R a+r archives
+
 RUN yarn install --production
 RUN npm install -g http-server
-RUN pip3 install -r requirements.txt
-RUN pip3 install git+https://github.com/pygame-web/pygbag --user --upgrade
-RUN python3 -m pygbag --build --port 1999 test_panda3d_cube.py
-CMD ["http-server","--cors","--port","1999"] 
-EXPOSE 1999
+CMD ["http-server","--cors","--port","8000"] 
+EXPOSE 8000

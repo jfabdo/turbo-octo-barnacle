@@ -1,0 +1,29 @@
+name: Build Wizard Union Server
+run-name: Build Wizard Union Server
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log job attrs
+        run: |
+          echo "Actor: ${{ github.actor }}"
+          echo "Trigger: ${{ github.event_name }}"
+          echo "OS: ${{ runner.os }}"
+          echo "Repo: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - name: Install deps
+        run: bin/init
+      - name: Build web artifacts
+        run: |
+          bin/buildweb
+          ls
+          ls build
+      - name: Log job status
+        run: |
+          echo "Status: ${{ job.status }}"

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+PORT=${1:-8000}
+
+env/bin/python -m pygbag --build --port $PORT src/main.py
