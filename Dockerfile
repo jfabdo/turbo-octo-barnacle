@@ -1,6 +1,5 @@
 FROM nikolaik/python-nodejs:latest
 WORKDIR /app
-#COPY . .
 COPY src/build/web/* ./
 
 RUN mkdir archives
