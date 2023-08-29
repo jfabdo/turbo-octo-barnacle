@@ -19,5 +19,11 @@ jobs:
           ls ${{ github.workspace }}
       - name: Install deps
         run: bin/init
-      - run: |
+      - name: Build web artifacts
+        run: |
+          bin/buildweb
+          ls
+          ls build
+      - name: Log job status
+        run: |
           echo "Status: ${{ job.status }}"
