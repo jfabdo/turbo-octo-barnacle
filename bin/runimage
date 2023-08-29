@@ -1,0 +1,7 @@
+#!/bin/bash
+
+PUBLICPORT=${1:-8000}
+PRIVATEPORT=${2:-8000}
+IMAGENAME=${3:-wu}
+
+docker run -p $PUBLICPORT:$PRIVATEPORT $IMAGENAME
