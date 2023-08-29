@@ -9,5 +9,5 @@ RUN chmod -R a+r archives
 
 RUN yarn install --production
 RUN npm install -g http-server
-CMD ["http-server","--cors","--port","8001"] 
-EXPOSE 8001
+CMD ["http-server","--cors","--port","8000"] 
+EXPOSE 8000

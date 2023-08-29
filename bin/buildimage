@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+IMAGENAME=${1:-wu}
+
+docker build -t $IMAGENAME .
